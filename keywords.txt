@@ -1,0 +1,28 @@
+#######################################
+# Syntax Coloring Map For GyverHX711
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+GyverHX711	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+available	KEYWORD2
+read	KEYWORD2
+tare	KEYWORD2
+setOffset	KEYWORD2
+getOffset	KEYWORD2
+sleepMode	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+HX_GAIN128_A	LITERAL1
+HX_GAIN32_B	LITERAL1
+HX_GAIN64_A	LITERAL1
