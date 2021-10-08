@@ -45,7 +45,8 @@ GyverHX711 sensor(data, clock, gain);
 ## Использование
 ```cpp
 bool available();           // true - доступен для чтения
-long read();                // получить данные
+long read();                // получить данные с фильтрацией
+long read_current_value();  // получить данные без фильтрации
 void tare();                // тарировать (автоматическая калибровка)
 void setOffset(long cal);   // установить оффсет вручную
 long getOffset();           // получить оффсет
@@ -61,10 +62,10 @@ GyverHX711 sensor(7, 8, HX_GAIN128_A);
 
 void setup() {
   Serial.begin(9600);
-  sensor.tare();		// калибровка нуля
+  sensor.tare();              // калибровка нуля
   
-  //sensor.sleepMode(true);		// выключить датчик
-  //sensor.sleepMode(false);	// включить датчик
+  //sensor.sleepMode(true);   // выключить датчик
+  //sensor.sleepMode(false);  // включить датчик
 }
 
 void loop() {
