@@ -1,8 +1,8 @@
 #include <GyverHX711.h>
 GyverHX711 sensor(7, 8, HX_GAIN128_A);
-// HX_A_GAIN128 - канал А усиление 128
-// HX_B_GAIN32 - канал B усиление 32
-// HX_A_GAIN64 - канал А усиление 64
+// HX_GAIN128_A - канал А усиление 128
+// HX_GAIN32_B - канал B усиление 32
+// HX_GAIN64_A - канал А усиление 64
 
 void setup() {
   Serial.begin(9600);

@@ -14,6 +14,9 @@
 
     Версии:
     v1.0 - релиз
+    v1.1 - поддержка отрицательных значений,
+           возможность получить значение без фильтрации,
+           возможно тарировать до получения первого значения
 */
 
 #ifndef GyverHX711_h
@@ -39,8 +42,8 @@ public:
         return (!digitalRead(_data));
     }
     
-    // получить данные
-    long read() {
+    // получить моментальное значение
+    long read_current_value() {
         if (available()) {
             _weight = 0;
             for (uint8_t i = 0; i < 24; i++) {
@@ -57,14 +60,28 @@ public:
                 digitalWrite(_clock, 0);
                 delayMicroseconds(1);
             }
-            _weight = median3(_weight);
+            // исправление отрицательных значений
+            if (_weight & 0x800000) {
+            _weight = _weight | 0xFF000000;
+            }
         }
         return _weight + _cal;
     }
     
+    // получить фильтрованное значение
+    long read() {
+        _weight = median3(read_current_value());
+        return _weight;
+    }
+    
     // тарировать (автоматическая калибровка)
     void tare() {
-        _cal = -_weight;
+        // дать возможность сделать калибровку при первом включении
+        if (_weight == 0) {
+            _cal = -read_current_value();
+        } else {
+            _cal = -_weight;
+        }
     }
     
     // установить оффсет вручную
