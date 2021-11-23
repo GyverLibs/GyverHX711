@@ -14,13 +14,11 @@
 
     Версии:
     v1.0 - релиз
-    v1.1 - поддержка отрицательных значений,
-           возможность получить значение без фильтрации,
-           возможно тарировать до получения первого значения
+    v1.1 (pull VardenTheOne) - отрицательные значения, убран фильтр, тарирование до получения первого значения
 */
 
-#ifndef GyverHX711_h
-#define GyverHX711_h
+#ifndef _GyverHX711_h
+#define _GyverHX711_h
 #include <Arduino.h>
 
 // режимы:
@@ -30,7 +28,7 @@
 
 class GyverHX711 {
 public:
-    // пин дата, пин клок, режим HX_A_GAIN128/HX_B_GAIN32/HX_A_GAIN64
+    // пин дата, пин клок, режим HX_GAIN128_A/HX_GAIN32_B/HX_GAIN64_A
     GyverHX711 (uint8_t data, uint8_t clock, uint8_t mode = HX_GAIN64_A) :
     _data(data), _clock(clock), _mode(mode) {
         pinMode(data, INPUT);
@@ -43,7 +41,7 @@ public:
     }
     
     // получить моментальное значение
-    long read_current_value() {
+    long read() {
         if (available()) {
             _weight = 0;
             for (uint8_t i = 0; i < 24; i++) {
@@ -60,28 +58,15 @@ public:
                 digitalWrite(_clock, 0);
                 delayMicroseconds(1);
             }
-            // исправление отрицательных значений
-            if (_weight & 0x800000) {
-            _weight = _weight | 0xFF000000;
-            }
+            if (_weight & 0x800000) _weight |= 0xFF000000;  // отрицательные
         }
         return _weight + _cal;
     }
     
-    // получить фильтрованное значение
-    long read() {
-        _weight = median3(read_current_value());
-        return _weight;
-    }
-    
     // тарировать (автоматическая калибровка)
     void tare() {
-        // дать возможность сделать калибровку при первом включении
-        if (_weight == 0) {
-            _cal = -read_current_value();
-        } else {
-            _cal = -_weight;
-        }
+        if (_weight == 0) _cal = -read();   // первый запуск
+        else _cal = -_weight;               // остальные
     }
     
     // установить оффсет вручную
@@ -103,17 +88,6 @@ public:
 private:
     long buf[3];
     uint8_t counter = 0;
-    // быстрая медиана
-    long median3(long value) {
-        buf[counter] = value;
-        if (++counter > 2) counter = 0;
-        if ((buf[0] <= buf[1]) && (buf[0] <= buf[2])) return (buf[1] <= buf[2]) ? buf[1] : buf[2];
-        else {
-            if ((buf[1] <= buf[0]) && (buf[1] <= buf[2])) return (buf[0] <= buf[2]) ? buf[0] : buf[2];
-            else return (buf[0] <= buf[1]) ? buf[0] : buf[1];
-        }
-    }
-
     long _weight = 0, _cal = 0;
     const uint8_t _data, _clock, _mode;
 };
