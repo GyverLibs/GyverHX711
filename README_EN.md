@@ -1,3 +1,5 @@
+This is an automatic translation, may be incorrect in some places. See sources and examples!
+
 # GyverHX711
 Library for working with sensors (ADC) HX711 for Arduino
 - Reading
