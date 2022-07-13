@@ -15,6 +15,7 @@
     Версии:
     v1.0 - релиз
     v1.1 (pull VardenTheOne) - отрицательные значения, убран фильтр, тарирование до получения первого значения
+    v1.1.1 - убраны лишние переменные после v1.1
 */
 
 #ifndef _GyverHX711_h
@@ -86,8 +87,6 @@ public:
     }
 
 private:
-    long buf[3];
-    uint8_t counter = 0;
     long _weight = 0, _cal = 0;
     const uint8_t _data, _clock, _mode;
 };
