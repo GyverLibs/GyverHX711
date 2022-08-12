@@ -44,8 +44,8 @@
 <a id="init"></a>
 ## Инициализация
 ```cpp
-GyverHX711 sensor(data, clock, gain);
-// константы gain:
+GyverHX711 sensor(data, clock, chan);
+// константы chan:
 // HX_GAIN128_A - канал А усиление 128
 // HX_GAIN32_B - канал B усиление 32
 // HX_GAIN64_A - канал А усиление 64
@@ -54,12 +54,13 @@ GyverHX711 sensor(data, clock, gain);
 <a id="usage"></a>
 ## Использование
 ```cpp
-bool available();           // true - доступен для чтения
-long read();                // получить данные
-void tare();                // тарировать (автоматическая калибровка)
-void setOffset(long cal);   // установить оффсет вручную
-long getOffset();           // получить оффсет
-void sleepMode(bool mode);  // true - режим сна, false - проснуться
+bool available();               // true - доступен для чтения
+long read();                    // получить данные
+void tare();                    // тарировать (автоматическая калибровка)
+void setOffset(long cal);       // установить оффсет вручную
+long getOffset();               // получить оффсет
+void sleepMode(bool mode);      // true - режим сна, false - проснуться
+void setChannel(uint8_t chan);  // установить канал и усиление HX_GAIN128_A/HX_GAIN32_B/HX_GAIN64_A
 ```
 
 ### Особенности
@@ -129,6 +130,7 @@ void loop() {
 - v1.0
 - v1.1 (pull VardenTheOne) - отрицательные значения, убран фильтр, тарирование до получения первого значения
 - v1.1.1 - убраны лишние переменные после v1.1
+- v1.2 - добавлена возможность менять канал/усиление на лету
 
 <a id="feedback"></a>
 ## Баги и обратная связь

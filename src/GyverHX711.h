@@ -16,6 +16,7 @@
     v1.0 - релиз
     v1.1 (pull VardenTheOne) - отрицательные значения, убран фильтр, тарирование до получения первого значения
     v1.1.1 - убраны лишние переменные после v1.1
+    v1.2 - добавлена возможность менять канал/усиление на лету
 */
 
 #ifndef _GyverHX711_h
@@ -30,10 +31,15 @@
 class GyverHX711 {
 public:
     // пин дата, пин клок, режим HX_GAIN128_A/HX_GAIN32_B/HX_GAIN64_A
-    GyverHX711 (uint8_t data, uint8_t clock, uint8_t mode = HX_GAIN64_A) :
-    _data(data), _clock(clock), _mode(mode) {
+    GyverHX711 (uint8_t data, uint8_t clock, uint8_t chan = HX_GAIN64_A) :
+    _data(data), _clock(clock), _chan(chan) {
         pinMode(data, INPUT);
         pinMode(clock, OUTPUT);
+    }
+    
+    // установить канал и усиление HX_GAIN128_A/HX_GAIN32_B/HX_GAIN64_A
+    void setChannel(uint8_t chan) {
+        _chan = chan;
     }
     
     // true - доступен для чтения
@@ -53,7 +59,7 @@ public:
                 digitalWrite(_clock, LOW);
                 delayMicroseconds(1);
             }
-            for (uint8_t i = 0; i < _mode + 1; i++) {
+            for (uint8_t i = 0; i < _chan + 1; i++) {
                 digitalWrite(_clock, 1);
                 delayMicroseconds(1);
                 digitalWrite(_clock, 0);
@@ -88,6 +94,7 @@ public:
 
 private:
     long _weight = 0, _cal = 0;
-    const uint8_t _data, _clock, _mode;
+    const uint8_t _data, _clock;
+    uint8_t _chan;
 };
 #endif

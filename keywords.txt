@@ -18,6 +18,7 @@ tare	KEYWORD2
 setOffset	KEYWORD2
 getOffset	KEYWORD2
 sleepMode	KEYWORD2
+setChannel	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
