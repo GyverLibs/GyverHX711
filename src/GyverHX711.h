@@ -7,7 +7,7 @@
     - Смена усиления и канала
     - Спящий режим
     - Калибровка
-    
+
     AlexGyver, alex@alexgyver.ru
     https://alexgyver.ru/
     MIT License
@@ -29,24 +29,25 @@
 #define HX_GAIN64_A 2
 
 class GyverHX711 {
-public:
+   public:
     // пин дата, пин клок, режим HX_GAIN128_A/HX_GAIN32_B/HX_GAIN64_A
-    GyverHX711 (uint8_t data, uint8_t clock, uint8_t chan = HX_GAIN64_A) :
-    _data(data), _clock(clock), _chan(chan) {
+    GyverHX711(uint8_t data, uint8_t clock, uint8_t chan = HX_GAIN64_A) : _data(data), _clock(clock) {
         pinMode(data, INPUT);
         pinMode(clock, OUTPUT);
+        digitalWrite(clock, LOW);
+        setChannel(chan);
     }
-    
+
     // установить канал и усиление HX_GAIN128_A/HX_GAIN32_B/HX_GAIN64_A
     void setChannel(uint8_t chan) {
-        _chan = chan;
+        _chan = (chan <= HX_GAIN64_A) ? chan : HX_GAIN64_A;
     }
-    
+
     // true - доступен для чтения
     bool available() {
         return (!digitalRead(_data));
     }
-    
+
     // получить моментальное значение
     long read() {
         if (available()) {
@@ -60,41 +61,43 @@ public:
                 delayMicroseconds(1);
             }
             for (uint8_t i = 0; i < _chan + 1; i++) {
-                digitalWrite(_clock, 1);
+                digitalWrite(_clock, HIGH);
                 delayMicroseconds(1);
-                digitalWrite(_clock, 0);
+                digitalWrite(_clock, LOW);
                 delayMicroseconds(1);
             }
-            if (_weight & 0x800000) _weight |= 0xFF000000;  // отрицательные
+            if (_weight & 0x800000) _weight -= 0x1000000;  // отрицательные
+            _hasData = true;
         }
         return _weight + _cal;
     }
-    
+
     // тарировать (автоматическая калибровка)
     void tare() {
-        if (_weight == 0) _cal = -read();   // первый запуск
-        else _cal = -_weight;               // остальные
+        if (!_hasData) read();  // первый запуск
+        _cal = -_weight;
     }
-    
+
     // установить оффсет вручную
     void setOffset(long cal) {
         _cal = cal;
     }
-    
+
     // получить оффсет
     long getOffset() {
         return _cal;
     }
-    
+
     // true - режим сна, false - проснуться
     void sleepMode(bool mode) {
-        digitalWrite(_clock, 0);
-        if (mode) digitalWrite(_clock, 1);
+        digitalWrite(_clock, LOW);
+        if (mode) digitalWrite(_clock, HIGH);
     }
 
-private:
+   private:
     long _weight = 0, _cal = 0;
     const uint8_t _data, _clock;
-    uint8_t _chan;
+    uint8_t _chan = HX_GAIN64_A;
+    bool _hasData = false;
 };
 #endif
